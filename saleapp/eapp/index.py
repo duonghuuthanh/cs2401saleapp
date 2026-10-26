@@ -28,9 +28,7 @@ def login_process():
     if u:
         login_user(user=u)
 
-        return redirect('/admin')
-
-    return render_template('admin/index.html', err_msg='Login thất bại do sai username hoặc password!')
+    return redirect('/admin')
 
 @app.route('/register')
 def register_view():

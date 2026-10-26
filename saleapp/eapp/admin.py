@@ -1,4 +1,6 @@
 from flask_admin import Admin, BaseView, expose
+from wtforms.fields.numeric import FloatField
+
 from eapp import app, db
 from flask_admin.contrib.sqla import ModelView
 from eapp.models import Category, Product, UserRoleEnum
@@ -21,6 +23,9 @@ class ProductView(AdminAuthenticated):
     column_editable_list = ['name']
     can_view_details = True
     details_modal = True
+    form_overrides = {
+        'price': FloatField
+    }
 
 
 class BaseAdminAuthenticated(BaseView):
