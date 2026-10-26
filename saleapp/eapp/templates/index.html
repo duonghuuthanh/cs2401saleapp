@@ -4,6 +4,12 @@
 
 {% block content %}
 
+<ul class="pagination mt-2">
+    {% for i in range(1, pages+1) %}
+  <li class="page-item"><a class="page-link" href="/?page={{i}}">{{i}}</a></li>
+    {% endfor %}
+</ul>
+
 {% if products %}
 <div class="row">
     {% for p in products %}

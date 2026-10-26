@@ -1,0 +1,35 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+
+
+{% if current_user.is_authenticated %}
+
+<div class="alert alert-info mt-2">
+  <h3>Chào <span class="text-success">{{ current_user.username }}</span>!</h3>
+</div>
+
+{% else %}
+
+<h1 class="text-center text-success mt-2">ĐĂNG NHẬP QUẢN TRỊ</h1>
+{% if err_msg %}
+<div class="alert alert-danger">
+  {{ err_msg }}
+</div>
+{% endif %}
+
+<form method="post" action="/login">
+  <div class="form-group">
+    <label for="username">Tên đăng nhập:</label>
+    <input type="text" class="form-control" placeholder="Tên đăng nhập" id="username" name="username" />
+  </div>
+  <div class="form-group">
+    <label for="pwd">Mật khẩu:</label>
+    <input type="password" class="form-control" placeholder="Mật khẩu" id="pwd" name="password" />
+  </div>
+  <button type="submit" class="btn btn-primary">Đăng nhập</button>
+</form>
+{% endif %}
+
+
+{% endblock %}
