@@ -4,4 +4,18 @@
 
 {% block content %}
 <h1 class="text-center text-success mt-2">ĐĂNG NHẬP NGƯỜI DÙNG</h1>
+
+<form method="post" action="/login?from=client">
+    <div class="form-floating mb-3 mt-3">
+      <input type="text" class="form-control" id="username" placeholder="Tên đăng nhập" name="username" required />
+      <label for="username">Tên đăng nhập</label>
+    </div>
+    <div class="form-floating mb-3 mt-3">
+      <input type="password" class="form-control" id="password" placeholder="Mật khẩu" name="password" required />
+      <label for="password">Mật khẩu</label>
+    </div>
+    <div class="form-floating mb-3 mt-3">
+        <button class="btn btn-success" type="submit">Đăng nhập</button>
+    </div>
+</form>
 {% endblock %}
