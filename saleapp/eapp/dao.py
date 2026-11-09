@@ -1,7 +1,9 @@
-from eapp.models import Category, Product, User
+from eapp.models import Category, Product, User, Receipt, ReceiptDetails
 from eapp import app, db
 import hashlib
 import cloudinary.uploader
+from flask_login import current_user
+from sqlalchemy import func
 
 def load_categories():
     return Category.query.all()
@@ -45,3 +47,26 @@ def create_user(name, username, password, avatar=None):
 
     db.session.add(u)
     db.session.commit()
+
+
+def add_receipt(cart):
+    if cart:
+        r = Receipt(user=current_user)
+        db.session.add(r)
+
+        for c in cart.values():
+            d = ReceiptDetails(quantity=c['quantity'], price=c['price'], receipt=r, product_id=c['id'])
+            db.session.add(d)
+
+        db.session.commit()
+
+
+def count_products_by_cate():
+    # [(1, 'Mobile', 6), (2, 'Tablet', 3), (3, 'Laptop', 0)]
+    return (db.session.query(Category.id, Category.name, func.count(Product.id))
+            .join(Product, Product.category_id==Category.id, isouter=True).group_by(Category.id).all())
+
+
+if __name__ == '__main__':
+    with app.app_context():
+        print(count_products_by_cate())

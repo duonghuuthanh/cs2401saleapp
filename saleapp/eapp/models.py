@@ -1,28 +1,33 @@
-from tkinter.font import names
-
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Enum, Date
 from sqlalchemy.orm import relationship
 from eapp import db, app
 from enum import Enum as UserEnum
+from datetime import datetime
+
+
+class BaseModel(db.Model):
+    __abstract__ = True
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
 
 class UserRoleEnum(UserEnum):
     ADMIN = 1
     USER = 2
 
-class User(db.Model, UserMixin):
-    id = Column(Integer, primary_key=True, autoincrement=True)
+class User(BaseModel, UserMixin):
     name = Column(String(50), nullable=False)
     avatar = Column(String(100), default='https://res.cloudinary.com/dxxwcby8l/image/upload/v1647056401/ipmsmnxjydrhpo21xrd8.jpg')
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(100), nullable=False)
     user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.USER)
+    receipts = relationship('Receipt', backref='user', lazy=True)
 
     def __str__(self):
         return self.name
 
-class Category(db.Model):
-    id = Column(Integer, primary_key=True, autoincrement=True)
+class Category(BaseModel):
     name = Column(String(50), nullable=False, unique=True)
     products = relationship('Product', backref='category', lazy=True)
 
@@ -30,16 +35,28 @@ class Category(db.Model):
         return self.name
 
 
-class Product(db.Model):
-    id = Column(Integer, primary_key=True, autoincrement=True)
+class Product(BaseModel):
     name = Column(String(50), nullable=False)
     price = Column(Float, default=0)
     image = Column(String(100), nullable=True)
     active = Column(Boolean, default=True)
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
+    details = relationship('ReceiptDetails', backref='product', lazy=True)
 
     def __str__(self):
         return self.name
+
+class Receipt(BaseModel):
+    created_date = Column(Date, default=datetime.now())
+    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    details = relationship('ReceiptDetails', backref='receipt', lazy=True)
+
+
+class ReceiptDetails(BaseModel):
+    quantity = Column(Integer, default=0)
+    price = Column(Float, default=0)
+    receipt_id = Column(Integer, ForeignKey(Receipt.id), nullable=False)
+    product_id = Column(Integer, ForeignKey(Product.id), nullable=False)
 
 
 if __name__ == '__main__':

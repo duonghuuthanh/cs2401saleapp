@@ -1,14 +1,17 @@
-from flask_admin import Admin, BaseView, expose
+from flask_admin import Admin, BaseView, expose, AdminIndexView
 from wtforms.fields.numeric import FloatField
-
-from eapp import app, db
+from eapp import app, db, dao
 from flask_admin.contrib.sqla import ModelView
 from eapp.models import Category, Product, UserRoleEnum
 from flask_login import logout_user, current_user
 from flask import redirect
 
+class MyAdminIndex(AdminIndexView):
+    @expose('/')
+    def index(self):
+        return self.render('admin/index.html', stats=dao.count_products_by_cate())
 
-admin = Admin(app=app, name='eCommerce Admin')
+admin = Admin(app=app, name='eCommerce Admin', index_view=MyAdminIndex())
 
 class AdminAuthenticated(ModelView):
     def is_accessible(self) -> bool:
@@ -26,7 +29,6 @@ class ProductView(AdminAuthenticated):
     form_overrides = {
         'price': FloatField
     }
-
 
 class BaseAdminAuthenticated(BaseView):
     def is_accessible(self) -> bool:

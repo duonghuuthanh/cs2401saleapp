@@ -27,7 +27,7 @@
                 </li>
                 {% else %}
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="/login">&#129489; Đăng nhập</a>
+                    <a class="nav-link text-danger" href="/login?next=/">&#129489; Đăng nhập</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-success" href="/register">&#128100; Đăng ký</a>
@@ -35,7 +35,7 @@
                 {% endif %}
 
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="/login">🛒 <span class="badge bg-danger cart-counter">0</span></a>
+                    <a class="nav-link text-danger" href="/cart">🛒 <span class="badge bg-danger cart-counter">{{ carts.total_quantity }}</span></a>
                 </li>
 
 

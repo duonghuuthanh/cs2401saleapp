@@ -9,6 +9,30 @@
   <h3>Chào <span class="text-success">{{ current_user.username }}</span>!</h3>
 </div>
 
+<div class="row">
+  <div class="col-5">
+    <table class="table">
+      <tr>
+        <th>Id</th>
+        <th>Tên danh mục</th>
+        <th>Số lượng sản phẩm</th>
+      </tr>
+      {% for s in stats %}
+      <tr>
+        <td>{{ s[0] }}</td>
+        <td>{{ s[1] }}</td>
+        <td>{{ s[2] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div class="col-7">
+    <div>
+      <canvas id="myChart"></canvas>
+    </div>
+  </div>
+</div>
+
 {% else %}
 
 <h1 class="text-center text-success mt-2">ĐĂNG NHẬP QUẢN TRỊ</h1>
@@ -32,4 +56,37 @@
 {% endif %}
 
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  let data = [];
+  let labels = [];
+
+  {% for s in stats %}
+    labels.push('{{ s[1] }}');
+    data.push({{ s[2] }})
+  {% endfor %}
+
+  window.onload = function() {
+    const ctx = document.getElementById('myChart');
+
+    new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '# Số lượng',
+          data: data,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+</script>
 {% endblock %}
