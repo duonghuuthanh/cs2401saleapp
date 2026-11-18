@@ -1,3 +1,5 @@
+from tkinter.messagebox import RETRY
+
 from eapp.models import Category, Product, User, Receipt, ReceiptDetails
 from eapp import app, db
 import hashlib
@@ -67,6 +69,26 @@ def count_products_by_cate():
             .join(Product, Product.category_id==Category.id, isouter=True).group_by(Category.id).all())
 
 
+def stats_revenue_by_products(kw=None):
+    query = (db.session.query(Product.id, Product.name, func.sum(ReceiptDetails.price * ReceiptDetails.quantity).label('revenue'))
+             .join(ReceiptDetails, ReceiptDetails.product_id==Product.id).group_by(Product.id)).order_by('revenue')
+
+    if kw:
+        query = query.filter(Product.name.contains(kw))
+
+    return query.all()
+
+
+def stats_revenue_by_time(year, time='month'):
+    query = (db.session.query(func.extract(time, Receipt.created_date),
+                             func.sum(ReceiptDetails.price * ReceiptDetails.quantity).label('revenue'))
+             .join(ReceiptDetails, ReceiptDetails.receipt_id==Receipt.id)
+             .filter(func.extract('year', Receipt.created_date)==year)
+             .group_by(func.extract(time, Receipt.created_date)).order_by('revenue'))
+
+    return query.all()
+
+
 if __name__ == '__main__':
     with app.app_context():
-        print(count_products_by_cate())
+        print(stats_revenue_by_time(2026))

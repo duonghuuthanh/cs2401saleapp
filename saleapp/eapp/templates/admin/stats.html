@@ -3,4 +3,88 @@
 {% block body %}
 <h1 class="text-center text-success mt-2">THÔNG KÊ & BÁO CÁO</h1>
 
+<form method="get" action="">
+    <div class="row">
+        <div class="col-12 p-2">
+            <input type="text" placeholder="Nhập tên sản phẩm..." name="kw" class="form-control" />
+        </div>
+        <div class="col-6 p-2">
+            <select name="time" class="form-control">
+                <option value="month" selected>Theo tháng</option>
+                <option value="quarter">Theo quý</option>
+            </select>
+        </div>
+        <div class="col-6 p-2">
+            <input type="number" placeholder="Nhập năm..." name="year" class="form-control" />
+        </div>
+    </div>
+    <div class="pt-2 pb-2">
+        <button class="btn btn-info">Thống kê</button>
+    </div>
+</form>
+
+<div class="row">
+    <div class="col-5">
+        <table class="table">
+            <tr>
+                <th>Id</th>
+                <th>Tên sản phẩm</th>
+                <th>Doanh thu (VNĐ)</th>
+            </tr>
+            {% for s in stats_by_products %}
+            <tr>
+                <td>{{ s[0] }}</td>
+                <td>{{ s[1] }}</td>
+                <td>{{ "{:,}".format(s[2]) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="col-7">
+        <canvas id="myChart1"></canvas>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-5">
+        <table class="table">
+            <tr>
+                <th>Thời gian</th>
+                <th>Doanh thu (VNĐ)</th>
+            </tr>
+            {% for s in stats_by_time %}
+            <tr>
+                <td>{{ s[0] }}</td>
+                <td>{{ "{:,}".format(s[1]) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="col-7">
+        <canvas id="myChart2"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/draw.js') }}"></script>
+<script>
+        let data = [];
+        let labels = [];
+        let data2 = [];
+        let labels2 = [];
+
+      {% for s in stats_by_products %}
+        labels.push('{{ s[1] }}');
+        data.push({{ s[2] }})
+      {% endfor %}
+      {% for s in stats_by_time %}
+        labels2.push({{ s[0] }});
+        data2.push({{ s[1] }})
+      {% endfor %}
+
+    window.onload = function() {
+        drawChart(data, labels, 'Doanh thu theo sản phẩm', 'myChart1', 'bar')
+        drawChart(data2, labels2, 'Doanh thu theo thời gian', 'myChart2', 'bar')
+    }
+</script>
 {% endblock %}
